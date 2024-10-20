@@ -1,6 +1,7 @@
 add_requires("raylib", "imgui", {configs = {win32=false}})
 target("divertor")
     add_files("src/**.cpp")
+    set_symbols("debug")
     set_languages("cxx17")
     set_kind("binary")
     add_linkdirs("ext/windivert/x64")
