@@ -1,0 +1,4 @@
+namespace wnd
+{
+    void Run();
+}
