@@ -48,7 +48,7 @@ class NetworkEngine
     std::optional<NetPacket> Step();
     bool Send(NetPacket pkt);
 
-    std::function<void(NetworkEngine, NetPacket)> onPktRecieved;
+    std::function<void(NetworkEngine, NetPacket&)> onPktRecieved;
 
     bool isRunning = false;
     bool isDirty = false;

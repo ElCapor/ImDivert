@@ -68,7 +68,7 @@ const char* packet_summary(NetPacket pkt)
     return ss.str().c_str(); 
 }
 
-void OnPktRecieved(NetworkEngine nt, NetPacket pkt)
+void OnPktRecieved(NetworkEngine nt, NetPacket& pkt)
 {
     UINT64 hash = WinDivertHelperHashPacket(pkt.data, pkt.len, 0);
     printf("Packet [Timestamp=%.8g, Direction=%s IfIdx=%u SubIfIdx=%u "
@@ -76,7 +76,7 @@ void OnPktRecieved(NetworkEngine nt, NetPacket pkt)
             0, (pkt.addr.Outbound?  "outbound": "inbound"),
             pkt.addr.Network.IfIdx, pkt.addr.Network.SubIfIdx, pkt.addr.Loopback, hash);
     nPackets.push_back(pkt);
-    nt.Send(pkt);
+    //nt.Send(pkt);
 }
 
 // has the network thread started
@@ -131,7 +131,7 @@ void ui::Render()
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0xff008000);
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, 0xff669933);
             if (ImGui::Button("Run", { 64, 0 }))
-                ntEngine.Init("tcp.DstPort == 14013", 0);
+                ntEngine.Init("tcp.DstPort == 12345", 0);
             ImGui::PopStyleColor();
             ImGui::PopStyleColor();
             ImGui::EndDisabled();
