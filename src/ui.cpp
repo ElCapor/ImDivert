@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <thread>
+#include <imgui_hex_editor.h>
 NetworkEngine ntEngine;
 
 void ui::Init()
@@ -100,6 +101,12 @@ void network_thread()
     }
 }
 
+uint16_t reverseEndian16(uint16_t value) {
+    return (value >> 8) | (value << 8);
+}
+
+static MemoryEditor mem_edit;
+
 void ui::Render()
 {
     if (!isStarted)
@@ -131,7 +138,7 @@ void ui::Render()
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0xff008000);
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, 0xff669933);
             if (ImGui::Button("Run", { 64, 0 }))
-                ntEngine.Init("tcp.DstPort == 12345", 0);
+                ntEngine.Init("udp.DstPort == 12345", 0);
             ImGui::PopStyleColor();
             ImGui::PopStyleColor();
             ImGui::EndDisabled();
@@ -169,10 +176,86 @@ void ui::Render()
                 {
                     for (int i=0; i < nPackets.size(); i++)
                     {
+                        NetPacket pkt = nPackets[i];
                         ImGui::PushID(i);
                         if (ImGui::CollapsingHeader(packet_summary(nPackets[i])))
                         {
-                            ImGui::Text("Holder");
+                            switch (pkt.typ)
+                            {
+                                case NT_IP:
+                                {
+                                    if (ImGui::TreeNode("IP Header"))
+                                    {
+                                        ImGui::Text("Header Length %i", pkt.ip_header->HdrLength);
+                                        ImGui::Text("IP Version %i",pkt.ip_header->Version);
+                                        ImGui::Text("TOS %i", pkt.ip_header->TOS);
+                                        ImGui::Text("TTL %i", pkt.ip_header->TTL);
+                                        ImGui::Text("Protocol %i", pkt.ip_header->Protocol);
+                                        ImGui::Text("Checksum %i", pkt.ip_header->Checksum);
+                                        ImGui::Text("SrcAddr %s", ipToStr(pkt.ip_header->SrcAddr).c_str());
+                                        ImGui::Text("DestAddr %s", ipToStr(pkt.ip_header->DstAddr).c_str());
+                                        ImGui::TreePop();
+                                    }
+                                }
+                                    break;
+                                
+                                default:
+                                    ImGui::Text("Unknown Header");
+                                    break;
+                            }
+
+                            switch (pkt.kind)
+                            {
+                                case NT_TCP:
+                                    {
+                                        if (ImGui::TreeNode("TCP Header"))
+                                        {
+                                            ImGui::Text("Src Port %i", pkt.tcp_header->SrcPort);
+                                            ImGui::Text("Dst Port %i", pkt.tcp_header->DstPort);
+                                            ImGui::Text("Checksum %i", pkt.tcp_header->Checksum);
+                                            ImGui::Text("SeqNum %i", pkt.tcp_header->SeqNum);
+                                            ImGui::Text("AckNum %i", pkt.tcp_header->AckNum);
+                                            ImGui::Text("HdrLength %i", pkt.tcp_header->HdrLength);
+                                            ImGui::Text("Fin %b", pkt.tcp_header->Fin);
+                                            ImGui::Text("Syn %b", pkt.tcp_header->Syn);
+                                            ImGui::Text("Rst %b", pkt.tcp_header->Rst);
+                                            ImGui::Text("Psh %b", pkt.tcp_header->Psh);
+                                            ImGui::Text("Ack %b", pkt.tcp_header->Ack);
+                                            ImGui::Text("Urg %b", pkt.tcp_header->Urg);
+                                            ImGui::Text("Window %b", pkt.tcp_header->Window);
+
+                                            ImGui::Text("Reserved1 %i", pkt.tcp_header->Reserved1);
+                                            ImGui::Text("Reserved2 %i", pkt.tcp_header->Reserved2);
+                                            ImGui::TreePop();
+                                        }
+                                    }
+                                    break;
+                                
+                                case NT_UDP:
+                                    {
+                                        if (ImGui::TreeNode("UDP Header"))
+                                        {
+                                            ImGui::Text("Src Port %i", reverseEndian16(pkt.udp_header->SrcPort));
+                                            ImGui::Text("Dst Port %i", reverseEndian16(pkt.udp_header->DstPort));
+                                            ImGui::Text("Length %i", pkt.udp_header->Length);
+                                            ImGui::Text("Checksum %i", pkt.udp_header->Checksum);
+                                            ImGui::TreePop();
+                                        }
+                                    }
+                                    break;
+
+                                default:
+                                    ImGui::Text("Unknown Protocol");
+                                    break;
+                            }
+                            if (ImGui::TreeNode("Raw Data"))
+                            {
+                                if (ImGui::Button("Edit hex"))
+                                {
+                                    mem_edit.DrawWindow("Memory Editor", pkt.data, pkt.len);
+                                }
+                                ImGui::TreePop();
+                            }
                         }
                         ImGui::PopID();
                     }
