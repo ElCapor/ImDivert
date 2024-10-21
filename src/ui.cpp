@@ -106,6 +106,8 @@ uint16_t reverseEndian16(uint16_t value) {
 }
 
 static MemoryEditor mem_edit;
+NetPacket currentPkt;
+bool showPktHex = false;
 
 void ui::Render()
 {
@@ -252,7 +254,8 @@ void ui::Render()
                             {
                                 if (ImGui::Button("Edit hex"))
                                 {
-                                    mem_edit.DrawWindow("Memory Editor", pkt.data, pkt.len);
+                                    currentPkt = pkt;
+                                    showPktHex = true;
                                 }
                                 ImGui::TreePop();
                             }
@@ -270,6 +273,10 @@ void ui::Render()
 
         }
         ImGui::End();
+        if (showPktHex)
+        {
+            mem_edit.DrawWindow("Memory Editor", currentPkt.data, currentPkt.len);
+        }
     }
 }
 
