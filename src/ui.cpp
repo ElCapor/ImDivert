@@ -6,15 +6,19 @@
 #include <thread>
 #include <imgui_hex_editor.h>
 #include <TextEditor.h>
-
+#include <LuaEngine.h>
 TextEditor editor;
 NetworkEngine ntEngine;
+LuaEngine lEngine;
 
 void ui::Init()
 {
     ImGui::SetNextWindowSize({800, 600}, ImGuiCond_FirstUseEver); //{ 800, 600 }
     editor.SetLanguageDefinition(TextEditor::LanguageDefinition::Lua());
     editor.SetPalette(TextEditor::GetDarkPalette());
+    lEngine.Init();
+    lEngine.RegisterEnv();
+    
 }
 
 std::vector<NetPacket> nPackets;
@@ -309,7 +313,10 @@ void ui::Render()
                             }
                             if (ImGui::BeginMenu("Go"))
                             {
-                                ImGui::MenuItem("Execute");
+                                if (ImGui::MenuItem("Execute"))
+                                {
+                                    lEngine.RunCodeUnsafe(editor.GetText());
+                                }
                                 ImGui::EndMenu();
                             }
                             ImGui::EndMenuBar();

@@ -19,6 +19,8 @@ enum NetPacketType
 
 struct NetPacket
 {
+public:
+
     WINDIVERT_ADDRESS addr;
     UINT len;
     unsigned char data[40 + 0xFFF];

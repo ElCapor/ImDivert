@@ -15,6 +15,7 @@ package("boostregex")
 package_end()
 
 add_requires("boostregex")
+add_requires("luajit", "sol2", {configs = {includes_lua=false}})
 
 
 target("divertor")
@@ -26,4 +27,4 @@ target("divertor")
     add_includedirs("ext/windivert/include", "include", "ext/ImGuiColorTextEdit", "ext/ImGuiColorTextEdit/vendor/regex/include")
     add_files("ext/ImGuiColorTextEdit/TextEditor.cpp", "ext/ImGuiColorTextEdit/LanguageDefinitions.cpp")
     add_links("WinDivert.lib", "ws2_32")
-    add_packages("raylib", "imgui", "boostregex")
+    add_packages("raylib", "imgui", "boostregex", "luajit", "sol2")
