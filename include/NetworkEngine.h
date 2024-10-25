@@ -39,6 +39,28 @@ struct NetPacket
     };
 };
 
+#include <vector>
+
+namespace xtd {
+    template <typename T>
+    std::vector<T> slice(const T* array, int start, int end) {
+        int length = end - start;
+        
+        if (length <= 0) return {};
+
+        std::vector<T> result(length);
+
+        for (int i = 0; i < length; ++i) {
+            result[i] = array[start + i];
+        }
+
+        return result;
+    }
+}
+
+std::vector<uint8_t> GetRawData(NetPacket& pkt);
+uint32_t GetHeadersLen(NetPacket& pkt);
+
 class NetworkEngine
 {
     public:

@@ -255,7 +255,7 @@ void ui::Render()
                                 if (ImGui::Button("Edit hex"))
                                 {
                                     currentPkt = pkt;
-                                    showPktHex = true;
+                                    mem_edit.Open = true;
                                 }
                                 ImGui::TreePop();
                             }
@@ -273,9 +273,9 @@ void ui::Render()
 
         }
         ImGui::End();
-        if (showPktHex)
+        if (mem_edit.Open)
         {
-            mem_edit.DrawWindow("Memory Editor", currentPkt.data, currentPkt.len);
+            mem_edit.DrawWindow("Memory Editor", GetRawData(currentPkt).data(), currentPkt.len - GetHeadersLen(currentPkt));
         }
     }
 }

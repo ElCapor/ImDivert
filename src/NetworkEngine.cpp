@@ -88,3 +88,47 @@ bool NetworkEngine::Stop()
     isRunning = false;
     return WinDivertClose(hHandle);
 }
+
+std::vector<uint8_t> GetRawData(NetPacket &pkt)
+{
+    
+
+    int extra_size = sizeof(WINDIVERT_ADDRESS);
+
+    auto ret = xtd::slice(pkt.data, GetHeadersLen(pkt), 4095);
+    return ret;
+}
+
+uint32_t GetHeadersLen(NetPacket &pkt)
+{
+    int header_size = 0;
+    switch (pkt.typ)
+    {
+        case NT_IP:
+            header_size = sizeof(WINDIVERT_IPHDR);
+            break;
+        case NT_IPV6:
+            header_size = sizeof(WINDIVERT_IPV6HDR);
+            break;
+        case NT_ICMP:
+            header_size = sizeof(WINDIVERT_ICMPHDR);
+            break;
+        case NT_ICMPV6:
+            header_size = sizeof(WINDIVERT_ICMPV6HDR);
+            break;
+    };
+
+    int kind_size = 0;
+    switch (pkt.kind)
+    {
+        case NT_TCP:
+            kind_size = sizeof(WINDIVERT_TCPHDR);
+            break;
+        
+        case NT_UDP:
+            kind_size = sizeof(WINDIVERT_UDPHDR);
+            break;
+    }
+
+    return header_size + kind_size;
+}
