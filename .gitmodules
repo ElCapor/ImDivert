@@ -1,0 +1,3 @@
+[submodule "ext/ImGuiColorTextEdit"]
+	path = ext/ImGuiColorTextEdit
+	url = https://github.com/goossens/ImGuiColorTextEdit.git

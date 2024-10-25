@@ -264,6 +264,10 @@ void ui::Render()
                     }
                     ImGui::EndTabItem();
                 }
+                if (ImGui::BeginTabItem("Scripting"))
+                {
+                    ImGui::EndTabItem();
+                }
                 if (ImGui::BeginTabItem("Settings"))
                 {
                     ImGui::EndTabItem();
