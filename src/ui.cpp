@@ -86,6 +86,12 @@ void OnPktRecieved(NetworkEngine nt, NetPacket &pkt)
            "Loopback=%u Hash=0x%.16llX]\n",
            0, (pkt.addr.Outbound ? "outbound" : "inbound"),
            pkt.addr.Network.IfIdx, pkt.addr.Network.SubIfIdx, pkt.addr.Loopback, hash);
+    auto fn = lEngine.GetState()["onPktRecieve"];
+    // user registered a callback to register packets
+    if (fn.is<sol::function>())
+    {
+        fn.call(std::ref(pkt.addr));   
+    }
     nPackets.push_back(pkt);
     // nt.Send(pkt);
 }

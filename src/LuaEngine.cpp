@@ -81,6 +81,24 @@ struct LuaWindivertAddress : WINDIVERT_ADDRESS
                 
                 return sol::make_object(L, this->Network);
             }
+            else if (str == "Flow")
+            {
+                if (Layer != 2)
+                    return sol::object(L, sol::in_place, sol::lua_nil);
+                
+                return sol::make_object(L, this->Flow);
+            } else if (str=="Socket")
+            {
+                if (Layer != 3)
+                    return sol::object(L, sol::in_place, sol::lua_nil);
+
+                return sol::object(L, sol::in_place, this->Socket);
+            } else if (str=="Reflect")
+            {
+                if (Layer !=4)
+                    return sol::object(L, sol::in_place, sol::lua_nil);
+                return sol::object(L, sol::in_place, this->Reflect);
+            }
         }
         return sol::object(L, sol::in_place, sol::lua_nil);
     }
@@ -153,6 +171,17 @@ bool LuaEngine::RegisterEnv()
         "Priority", &WINDIVERT_DATA_REFLECT::Priority
     );
 
+    windivert_meta.new_usertype<WINDIVERT_IPHDR>("IPHDR",
+        "HdrLength", sol::property([](WINDIVERT_IPHDR& hdr){
+            uint8_t hdrl = hdr.HdrLength;
+            return hdrl;
+        }),
+        "Version", sol::property([](WINDIVERT_IPHDR& hdr){
+            uint8_t hdrl = hdr.Version;
+            return hdrl;
+        })
+    );
+
     windivert_meta.new_usertype<LuaWindivertAddress>("Address",
                                                      sol::meta_function::index, &LuaWindivertAddress::get);
 
@@ -179,4 +208,9 @@ bool LuaEngine::RunCodeUnsafe(std::string code)
 
 void LuaEngine::ShutDown()
 {
+}
+
+sol::state &LuaEngine::GetState()
+{
+    return _lstate;
 }

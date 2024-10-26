@@ -13,6 +13,8 @@ public:
 
     void ShutDown();
 
+    sol::state& GetState();
+
 private:
     sol::state _lstate;
 };
