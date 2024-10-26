@@ -1,5 +1,6 @@
 #include <LuaEngine.h>
 #include <NetworkEngine.h>
+#include <utils.h>
 
 sol::object LuaWindivertAddress::get(sol::stack_object key, sol::this_state L)
 {
@@ -128,9 +129,7 @@ bool LuaEngine::RegisterEnv()
     auto windivert_meta = _lstate["Windivert"].get_or_create<sol::table>();
 
     windivert_meta.new_usertype<WINDIVERT_DATA_NETWORK>("Network",
-            "IfIdx",sol::property([](WINDIVERT_DATA_NETWORK& net){
-                return net.IfIdx;
-            }),
+            "IfIdx", &WINDIVERT_DATA_NETWORK::IfIdx,
             "SubIfIdx", &WINDIVERT_DATA_NETWORK::SubIfIdx
     );
 
@@ -170,6 +169,19 @@ bool LuaEngine::RegisterEnv()
         "Version", sol::property([](WINDIVERT_IPHDR& hdr){
             uint8_t hdrl = hdr.Version;
             return hdrl;
+        }),
+        "TOS", &WINDIVERT_IPHDR::TOS,
+        "Length", &WINDIVERT_IPHDR::Length,
+        "Id", &WINDIVERT_IPHDR::Id,
+        "FragOff0", &WINDIVERT_IPHDR::FragOff0,
+        "TTL", &WINDIVERT_IPHDR::TTL,
+        "Protocol", &WINDIVERT_IPHDR::Protocol,
+        "Checksum", &WINDIVERT_IPHDR::Checksum,
+        "SrcAddr", sol::property([](WINDIVERT_IPHDR& hdr){
+            return xtd::ipToStr(hdr.SrcAddr);
+        }),
+        "DstAddr", sol::property([](WINDIVERT_IPHDR& hdr){
+            return xtd::ipToStr(hdr.DstAddr);
         })
     );
 

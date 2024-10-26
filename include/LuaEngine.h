@@ -3,7 +3,10 @@
 #include <sol/sol.hpp>
 #include <luajit.h>
 #include <string>
-#include <windivert.h>
+#include <NetworkEngine.h>
+
+struct  LuaNetPkt : Net
+
 
 /// @brief Because the original structs are not aligned,
 /// we can't access bitfields , so we gotta wrap all

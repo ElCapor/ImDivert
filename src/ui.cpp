@@ -7,6 +7,8 @@
 #include <imgui_hex_editor.h>
 #include <TextEditor.h>
 #include <LuaEngine.h>
+#include <utils.h>
+
 TextEditor editor;
 NetworkEngine ntEngine;
 LuaEngine lEngine;
@@ -52,15 +54,6 @@ const char *transport2type(NetTransportType typ)
         return "Unknown";
     }
 }
-std::string ipToStr(uint32_t ip)
-{
-    std::stringstream ipStr;
-    for (short c = 0; c <= 24; c += 8)
-    {
-        ipStr << ((ip >> c) & 0xff) << ((c < 24) ? "." : "");
-    }
-    return ipStr.str();
-}
 
 const char *packet_summary(NetPacket pkt)
 {
@@ -75,7 +68,7 @@ const char *packet_summary(NetPacket pkt)
     }
 
     std::stringstream ss;
-    ss << "[" << pktype2str(pkt.kind) << "] " << ipToStr(pkt.ip_header->SrcAddr) << " -> " << ipToStr(pkt.ip_header->DstAddr) << std::endl;
+    ss << "[" << pktype2str(pkt.kind) << "] " << xtd::ipToStr(pkt.ip_header->SrcAddr) << " -> " << xtd::ipToStr(pkt.ip_header->DstAddr) << std::endl;
     return ss.str().c_str();
 }
 
@@ -212,8 +205,8 @@ void ui::Render()
                                     ImGui::Text("TTL %i", pkt.ip_header->TTL);
                                     ImGui::Text("Protocol %i", pkt.ip_header->Protocol);
                                     ImGui::Text("Checksum %i", pkt.ip_header->Checksum);
-                                    ImGui::Text("SrcAddr %s", ipToStr(pkt.ip_header->SrcAddr).c_str());
-                                    ImGui::Text("DestAddr %s", ipToStr(pkt.ip_header->DstAddr).c_str());
+                                    ImGui::Text("SrcAddr %s", xtd::ipToStr(pkt.ip_header->SrcAddr).c_str());
+                                    ImGui::Text("DestAddr %s", xtd::ipToStr(pkt.ip_header->DstAddr).c_str());
                                     ImGui::TreePop();
                                 }
                             }
