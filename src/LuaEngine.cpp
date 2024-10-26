@@ -65,10 +65,11 @@ sol::object LuaWindivertAddress::get(sol::stack_object key, sol::this_state L)
         else if (str == "Network")
         {
             // not a network packet
-            if (Layer != 0 || Layer != 1)
+            // fixed by https://github.com/Lurmog
+            if (Layer != 0 && Layer != 1)
                 return sol::object(L, sol::in_place, sol::lua_nil);
             
-            return sol::make_object(L, this->Network);
+            return sol::object(L, sol::in_place, this->Network);
         }
         else if (str == "Flow")
         {
@@ -127,7 +128,9 @@ bool LuaEngine::RegisterEnv()
     auto windivert_meta = _lstate["Windivert"].get_or_create<sol::table>();
 
     windivert_meta.new_usertype<WINDIVERT_DATA_NETWORK>("Network",
-            "IfIdx", &WINDIVERT_DATA_NETWORK::IfIdx,
+            "IfIdx",sol::property([](WINDIVERT_DATA_NETWORK& net){
+                return net.IfIdx;
+            }),
             "SubIfIdx", &WINDIVERT_DATA_NETWORK::SubIfIdx
     );
 
