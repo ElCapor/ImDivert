@@ -90,7 +90,7 @@ void OnPktRecieved(NetworkEngine nt, NetPacket &pkt)
     // user registered a callback to register packets
     if (fn.is<sol::function>())
     {
-        fn.call(std::ref(pkt.addr));   
+        fn.call(LuaWindivertAddress(pkt.addr));   
     }
     nPackets.push_back(pkt);
     // nt.Send(pkt);

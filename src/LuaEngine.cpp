@@ -1,108 +1,96 @@
 #include <LuaEngine.h>
 #include <NetworkEngine.h>
 
-/// @brief Because the original structs are not aligned,
-/// we can't access bitfields , so we gotta wrap all
-struct LuaWindivertAddress : WINDIVERT_ADDRESS
+sol::object LuaWindivertAddress::get(sol::stack_object key, sol::this_state L)
 {
-    LuaWindivertAddress() : WINDIVERT_ADDRESS()
+    auto key_str = key.as<sol::optional<std::string>>();
+    std::cout << "got key " << *key_str << std::endl;
+    if (key_str)
     {
-    }
-    LuaWindivertAddress(const WINDIVERT_ADDRESS &other) : WINDIVERT_ADDRESS(other)
-    {
-    }
-
-    sol::object get(sol::stack_object key, sol::this_state L)
-    {
-        auto key_str = key.as<sol::optional<std::string>>();
-        std::cout << "got key " << *key_str << std::endl;
-        if (key_str)
+        const auto str = *key_str;
+        if (str == "Layer")
         {
-            const auto str = *key_str;
-            if (str == "Layer")
-            {
-                WINDIVERT_LAYER val = (WINDIVERT_LAYER)this->Layer;
-                return sol::make_object(L, val);
-            }
-            else if (str == "Timestamp")
-            {
-                return sol::make_object(L, this->Timestamp);
-            }
-            else if (str == "Event")
-            {
-                uint32_t val = this->Event;
-                return sol::make_object(L, val);
-            }
-            else if (str == "Sniffed")
-            {
-                bool val = this->Sniffed;
-                return sol::make_object(L, val);
-            }
-            else if (str == "Outbound")
-            {
-                bool val = this->Outbound;
-                return sol::make_object(L, val);
-            }
-            else if (str == "Loopback")
-            {
-                bool val = this->Loopback;
-                return sol::make_object(L, val);
-            }
-            else if (str == "Impostor")
-            {
-                bool val = this->Impostor;
-                return sol::make_object(L, val);
-            }
-            else if (str == "IPv6")
-            {
-                bool isIPV6 = this->IPv6;
-                return sol::make_object(L, isIPV6);
-            }
-            else if (str == "IPChecksum")
-            {
-                bool val = this->IPChecksum;
-                return sol::make_object(L, val);
-            }
-            else if (str == "TCPChecksum")
-            {
-                bool val = this->TCPChecksum;
-                return sol::make_object(L, val);
-            }
-            else if (str == "UDPChecksum")
-            {
-                bool val = this->UDPChecksum;
-                return sol::make_object(L, val);
-            }
-            else if (str == "Network")
-            {
-                // not a network packet
-                if (Layer != 0 || Layer != 1)
-                    return sol::object(L, sol::in_place, sol::lua_nil);
-                
-                return sol::make_object(L, this->Network);
-            }
-            else if (str == "Flow")
-            {
-                if (Layer != 2)
-                    return sol::object(L, sol::in_place, sol::lua_nil);
-                
-                return sol::make_object(L, this->Flow);
-            } else if (str=="Socket")
-            {
-                if (Layer != 3)
-                    return sol::object(L, sol::in_place, sol::lua_nil);
-
-                return sol::object(L, sol::in_place, this->Socket);
-            } else if (str=="Reflect")
-            {
-                if (Layer !=4)
-                    return sol::object(L, sol::in_place, sol::lua_nil);
-                return sol::object(L, sol::in_place, this->Reflect);
-            }
+            WINDIVERT_LAYER val = (WINDIVERT_LAYER)this->Layer;
+            return sol::make_object(L, val);
         }
-        return sol::object(L, sol::in_place, sol::lua_nil);
+        else if (str == "Timestamp")
+        {
+            return sol::make_object(L, this->Timestamp);
+        }
+        else if (str == "Event")
+        {
+            uint32_t val = this->Event;
+            return sol::make_object(L, val);
+        }
+        else if (str == "Sniffed")
+        {
+            uint32_t val = this->Sniffed;
+            return sol::make_object(L, val);
+        }
+        else if (str == "Outbound")
+        {
+            uint32_t val = this->Outbound;
+            return sol::make_object(L, val);
+        }
+        else if (str == "Loopback")
+        {
+            uint32_t val = this->Loopback;
+            return sol::make_object(L, val);
+        }
+        else if (str == "Impostor")
+        {
+            uint32_t val = this->Impostor;
+            return sol::make_object(L, val);
+        }
+        else if (str == "IPv6")
+        {
+            uint32_t isIPV6 = this->IPv6;
+            return sol::make_object(L, isIPV6);
+        }
+        else if (str == "IPChecksum")
+        {
+            uint32_t val = this->IPChecksum;
+            return sol::make_object(L, val);
+        }
+        else if (str == "TCPChecksum")
+        {
+            uint32_t val = this->TCPChecksum;
+            return sol::make_object(L, val);
+        }
+        else if (str == "UDPChecksum")
+        {
+            uint32_t val = this->UDPChecksum;
+            return sol::make_object(L, val);
+        }
+        else if (str == "Network")
+        {
+            // not a network packet
+            if (Layer != 0 || Layer != 1)
+                return sol::object(L, sol::in_place, sol::lua_nil);
+            
+            return sol::make_object(L, this->Network);
+        }
+        else if (str == "Flow")
+        {
+            if (Layer != 2)
+                return sol::object(L, sol::in_place, sol::lua_nil);
+            
+            return sol::make_object(L, this->Flow);
+        } else if (str=="Socket")
+        {
+            if (Layer != 3)
+                return sol::object(L, sol::in_place, sol::lua_nil);
+
+            return sol::object(L, sol::in_place, this->Socket);
+        } else if (str=="Reflect")
+        {
+            if (Layer !=4)
+                return sol::object(L, sol::in_place, sol::lua_nil);
+            return sol::object(L, sol::in_place, this->Reflect);
+        }
     }
-};
+    return sol::object(L, sol::in_place, sol::lua_nil);
+}
 
 void LuaEngine::Init()
 {
